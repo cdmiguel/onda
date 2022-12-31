@@ -20,7 +20,8 @@ struct Spec {
 }
 
 /// Parses a WAV file from a byte slice buffer;
-pub fn parse_wav_bytes(buf: &[u8]) -> Result<WavData> {
+pub fn parse_wav_bytes(buf: impl AsRef<[u8]>) -> Result<WavData> {
+    let buf = buf.as_ref();
     let mut offset = 0;
 
     parse_riff_chunk(buf, &mut offset)?;
