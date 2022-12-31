@@ -1,2 +1,2 @@
 # onda
-Simple WAV file reader and writer written in Rust
+Simple WAV file reader and writer written in Rust.
