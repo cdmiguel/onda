@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::Result;
 use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::Path;
@@ -8,10 +8,6 @@ const BITS_PER_SAMPLE: u16 = 16;
 /// Creates a vector of WAV bytes from audio data.
 pub fn create_bytes(audiodata: impl AsRef<[Vec<i16>]>, samplerate: u32) -> Result<Vec<u8>> {
     let audiodata = audiodata.as_ref();
-
-    if audiodata.len() < 1 || audiodata.len() > 2 {
-        bail!("unsupported number of channels");
-    }
 
     let num_channels = audiodata.len() as u16;
 
@@ -73,9 +69,13 @@ fn write_data_chunk(buf: &mut Vec<u8>, audiodata: &[Vec<i16>], audiodata_size: u
     write!(buf, "data")?;
     buf.extend_from_slice(&audiodata_size.to_le_bytes());
 
-    for (&left, &right) in audiodata[0].iter().zip(audiodata[1].iter()) {
-        buf.extend_from_slice(&left.to_le_bytes());
-        buf.extend_from_slice(&right.to_le_bytes());
+    let num_frames = audiodata[0].len();
+    let num_channels = audiodata.len();
+
+    for f in 0..num_frames {
+        for c in 0..num_channels {
+            buf.extend_from_slice(&audiodata[c][f].to_le_bytes());
+        }
     }
 
     Ok(())

@@ -1,11 +1,11 @@
-use anyhow::{bail, Error, Result};
+use anyhow::{bail, Result};
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::path::Path;
 
 /// WAV info and audio data. `audiodata` is a vector of channels, and each channel is
 /// a vector of 16-bit samples.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct WavData {
     pub num_channels: u16,
     pub samplerate: u32,
@@ -97,27 +97,15 @@ fn parse_fmt_chunk(buf: &[u8], offset: &mut usize) -> Result<Spec> {
 fn parse_data_chunk(buf: &[u8], offset: &mut usize, spec: Spec) -> Result<Vec<Vec<i16>>> {
     let size = parse_u32(&buf, offset) as usize;
 
-    if spec.num_channels == 1 {
-        let mut samples = vec![];
+    let mut channels = vec![vec![]; spec.num_channels as usize];
 
-        while *offset < size {
-            samples.push(parse_i16(buf, offset));
+    while *offset < size {
+        for channel in &mut channels {
+            channel.push(parse_i16(buf, offset));
         }
-
-        Ok(vec![samples])
-    } else if spec.num_channels == 2 {
-        let mut samples_l = vec![];
-        let mut samples_r = vec![];
-
-        while *offset < size {
-            samples_l.push(parse_i16(buf, offset));
-            samples_r.push(parse_i16(buf, offset));
-        }
-
-        Ok(vec![samples_l, samples_r])
-    } else {
-        Err(Error::msg("unsupported number of channels"))
     }
+
+    Ok(channels)
 }
 
 fn find_data_offset(buf: &[u8], offset: &mut usize) -> Result<()> {
