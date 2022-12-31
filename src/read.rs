@@ -20,7 +20,7 @@ struct Spec {
 }
 
 /// Parses a WAV file from a byte slice buffer;
-pub fn parse_wav_bytes(buf: impl AsRef<[u8]>) -> Result<WavData> {
+pub fn parse_bytes(buf: impl AsRef<[u8]>) -> Result<WavData> {
     let buf = buf.as_ref();
     let mut offset = 0;
 
@@ -37,13 +37,13 @@ pub fn parse_wav_bytes(buf: impl AsRef<[u8]>) -> Result<WavData> {
 }
 
 /// Reads a WAV file from the provided path.
-pub fn read_from_file(path: impl AsRef<Path>) -> Result<WavData> {
+pub fn read(path: impl AsRef<Path>) -> Result<WavData> {
     let mut reader = BufReader::new(File::open(path)?);
 
     let mut buf = Vec::new();
     reader.read_to_end(&mut buf)?;
 
-    parse_wav_bytes(&buf)
+    parse_bytes(&buf)
 }
 
 fn parse_riff_chunk(buf: &[u8], offset: &mut usize) -> Result<()> {

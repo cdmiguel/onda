@@ -5,8 +5,8 @@ Simple WAV file reader and writer written in Rust.
 
 ```rust
 // Read a WAV file
-let wavdata = onda::read_from_file("foo.wav").unwrap();
+let wavdata = onda::read("foo.wav").unwrap();
 
 // Write a WAV file
-onda::write_into_file(wavdata.audiodata, wavdata.samplerate, "bar.wav").unwrap();
+onda::write(wavdata.audiodata, wavdata.samplerate, "bar.wav").unwrap();
 ```

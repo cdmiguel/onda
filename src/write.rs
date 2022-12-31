@@ -6,7 +6,7 @@ use std::path::Path;
 const BITS_PER_SAMPLE: u16 = 16;
 
 /// Creates a vector of WAV bytes from audio data.
-pub fn create_wav_bytes(audiodata: impl AsRef<[Vec<i16>]>, samplerate: u32) -> Result<Vec<u8>> {
+pub fn create_bytes(audiodata: impl AsRef<[Vec<i16>]>, samplerate: u32) -> Result<Vec<u8>> {
     let audiodata = audiodata.as_ref();
 
     if audiodata.len() < 1 || audiodata.len() > 2 {
@@ -27,12 +27,12 @@ pub fn create_wav_bytes(audiodata: impl AsRef<[Vec<i16>]>, samplerate: u32) -> R
 }
 
 /// Writes audio data into a WAV file.
-pub fn write_into_file(
+pub fn write(
     audiodata: impl AsRef<[Vec<i16>]>,
     samplerate: u32,
     path: impl AsRef<Path>,
 ) -> Result<()> {
-    let bytes = create_wav_bytes(audiodata, samplerate)?;
+    let bytes = create_bytes(audiodata, samplerate)?;
 
     let mut writer = BufWriter::new(File::create(path)?);
     writer.write_all(&bytes)?;
